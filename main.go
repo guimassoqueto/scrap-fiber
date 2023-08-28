@@ -58,34 +58,18 @@ func main() {
 	})
 	
 	app.Get("/", getHome)
-	app.Get("/feed", getFeed)
+	app.Get("/kadec", getDownload)
 
 	log.Fatal(app.Listen(":5000"))
 }
 
 
-func getFeed(c *fiber.Ctx) error {
-		rows, err := db.Query("SELECT id, title, category, image_url, reviews, price, previous_price, discount FROM feed;")
-		if err != nil {
-			return c.Status(500).SendString(err.Error())
-		}
-		defer rows.Close()
-		result := Items{}
-
-		for rows.Next() {
-			item := Item{}
-			if err := rows.Scan(&item.Id, &item.Title, &item.Category, &item.ImageUrl, &item.Reviews, &item.Price, &item.PreviousPrice, &item.Discount); err != nil {
-				return err
-			}
-			result.Items = append(result.Items, item)
-		}
-		return c.Render("index", fiber.Map{
-			"Items": result.Items,
-		})
+func getHome(c *fiber.Ctx) error {
+	return c.Render("index", fiber.Map{})
 }
 
 
-func getHome(c *fiber.Ctx) error {
+func getDownload(c *fiber.Ctx) error {
 	filePath := "files/kadec-bg.png"
 	fileContent, err := os.ReadFile(filePath)
 	if err != nil {
