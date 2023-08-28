@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+    <link href="https://fonts.cdnfonts.com/css/groovy-cartoon-expanded-round" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Groovy Cartoon Expanded Round', sans-serif;
+        }
+
+        .productImage {
+            height: 100px;
+            max-width: 100px;
+        }
+
+        .item {
+            width: 300px;
+            padding: 15px;
+            border: 1px solid #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    {{range .Items}}
+    <div class="item">
+        <p>{{.Title}} - <span class="discount">{{.Discount}}</span></p>
+        <img src="{{.ImageUrl}}" alt="{{.Title}}" srcset="" class="productImage">
+        <span>De <span>R${{.PreviousPrice}}</span></span>
+        <span>Por <span>R${{.Price}}</span></span>
+        <a href="{{.Id}}" target="_blank">Compre Aqui</a>
+    </div>  
+    {{end}}
+</body>
+</html>
