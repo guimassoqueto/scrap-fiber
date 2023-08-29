@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"log"
-	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
@@ -47,10 +46,6 @@ func Connect() error {
 }
 
 func main() {
-	if err := Connect(); err !=nil {
-		log.Fatal(err)
-	}
-
 	engine := html.New("./views", ".html")
 
 	app := fiber.New(fiber.Config{
@@ -58,37 +53,98 @@ func main() {
 	})
 	
 	app.Get("/", getHome)
-	app.Get("/kadec", getDownload)
+	app.Get("/kadec", getKadec)
+	app.Get("/kadecfiles/:filename", getKadecDownload)
+
+	app.Get("/thunder", getThunder)
+	app.Get("/thunderfiles/:filename", getThunderDownload)
 
 	log.Fatal(app.Listen(":5000"))
 }
-
 
 func getHome(c *fiber.Ctx) error {
 	return c.Render("index", fiber.Map{})
 }
 
 
-func getDownload(c *fiber.Ctx) error {
-	filePath := "files/kadec-bg.png"
-	fileContent, err := os.ReadFile(filePath)
+func getKadec(c *fiber.Ctx) error {
+	// Read the list of files and subdirectories in the specified folder
+	files, err := os.ReadDir("static/kadec")
+	if err != nil {
+		log.Fatalf("Error reading folder: %v", err)
+		c.SendString("ERROR")
+	}
+
+	var folderfiles []string
+
+	// Iterate through the list of file info objects
+	for _, file := range files {
+		// Check if the object is a regular file (not a directory)
+		if !file.IsDir() {
+			folderfiles = append(folderfiles, file.Name())
+		}
+	}
+
+	return c.Render("kadec", fiber.Map{
+		"Files": folderfiles,
+	})
+}
+
+
+func getKadecDownload(c *fiber.Ctx) error {
+	filename := c.Params("filename")
+	fileContent, err := os.ReadFile(fmt.Sprintf("static/kadec/%s", filename))
 	if err != nil {
 		log.Printf("Error reading file: %v", err)
 		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 	}
 
 	// Set response headers for file download
-	c.Set("Content-Disposition", "attachment; filename=kadec-bg.png")
+	c.Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
 	c.Set("Content-Type", "application/octet-stream")
 
 	// Send file content as response
 	return c.Send(fileContent)
 }
 
-func changeId(id *string) {
-	*id = strings.Replace(*id, "magazineluiza.com.br/", "magazinevoce.com.br/magazinepromothunder/", -1)
-	
-	if (strings.Contains(*id, "amazon.com")) {
-		*id = fmt.Sprintf("%s%s", *id, "?tag=promothunder-20&language=pt_BR&ref_=as_li_ss_tl")
+
+
+func getThunder(c *fiber.Ctx) error {
+	// Read the list of files and subdirectories in the specified folder
+	files, err := os.ReadDir("static/thunder")
+	if err != nil {
+		log.Fatalf("Error reading folder: %v", err)
+		c.SendString("ERROR")
 	}
+
+	var folderfiles []string
+
+	// Iterate through the list of file info objects
+	for _, file := range files {
+		// Check if the object is a regular file (not a directory)
+		if !file.IsDir() {
+			folderfiles = append(folderfiles, file.Name())
+		}
+	}
+
+	return c.Render("thunder", fiber.Map{
+		"Files": folderfiles,
+	})
+}
+
+
+func getThunderDownload(c *fiber.Ctx) error {
+	filename := c.Params("filename")
+	fileContent, err := os.ReadFile(fmt.Sprintf("static/thunder/%s", filename))
+	if err != nil {
+		log.Printf("Error reading file: %v", err)
+		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+	}
+
+	// Set response headers for file download
+	c.Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+	c.Set("Content-Type", "application/octet-stream")
+
+	// Send file content as response
+	return c.Send(fileContent)
 }
