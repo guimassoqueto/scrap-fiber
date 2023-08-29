@@ -3,3 +3,6 @@ a:
 
 f:
 	echo 123 1> static/thunder/123.txt && rm static/thunder/* && make a
+
+or:
+	open https://github.com/guimassoqueto/scrap-fiber
