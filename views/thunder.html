@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-  integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <style>
     ul {
-        list-style-type: none;
+      list-style-type: none;
     }
 
     li {
@@ -17,6 +18,7 @@
   </style>
 
 </head>
+
 <body>
   <ul>
     {{range .Files}}
@@ -25,51 +27,51 @@
         <img src="/thunderfiles/{{ . }}" alt="{{ . }}" width="100">
       </a>
       <button class="btn btn-primary" data-value="{{ . }}">Copiar URL</button>
-      {{end}} 
-      </ul>
-    </li>
-    <script>
-      const allButtons = document.getElementsByTagName("button")
-      for (const btn of allButtons) {
-        btn.addEventListener('click', async (e) => {
-          e.preventDefault()
-          const buttonDataValue = btn.dataset.value;
-          const buttonDataValueWithoutExtension = buttonDataValue.replace('.webp', '')
-          const productUrl = decodeURIComponent(atob(buttonDataValueWithoutExtension));
+      {{end}}
+  </ul>
+  </li>
+  <script>
+    const allButtons = document.getElementsByTagName("button")
+    for (const btn of allButtons) {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault()
+        const buttonDataValue = btn.dataset.value;
+        const buttonDataValueWithoutExtension = buttonDataValue.replace('.webp', '')
+        const productUrl = decodeURIComponent(atob(buttonDataValueWithoutExtension));
+        console.log(buttonDataValueWithoutExtension)
+        if (productUrl.includes('amazon.com')) {
+          navigator.clipboard.writeText(productUrl)
+          btn.innerText = "Copiado!"
+        }
 
-          if (productUrl.includes('amazon.com')) {
-            const gui = 'promothunder-20'
-            const afiliateUrl = `${productUrl}?tag=${gui}&language=pt_BR&ref_=as_li_ss_tl`
-            navigator.clipboard.writeText(afiliateUrl)
-            btn.innerText = "Copiado!"
-          }
+        else if (productUrl.includes('magazineluiza.com')) {
+          const afiliateUrl = productUrl.replace('magazineluiza.com.br/', 'magazinevoce.com.br/magazinepromothunder/')
+          navigator.clipboard.writeText(afiliateUrl)
+          btn.innerText = "Copiado!"
+        }
 
-          if (productUrl.includes('magazineluiza.com')) {
-            const afiliateUrl = productUrl.replace('magazineluiza.com.br/', 'magazinevoce.com.br/magazinepromothunder/')
-            navigator.clipboard.writeText(afiliateUrl)
-            btn.innerText = "Copiado!"
-          }
 
-          if (productUrl.includes('adidas.com')) {
-            //const afiliateUrl = productUrl.replace('magazineluiza.com.br/', 'magazinevoce.com.br/magazinepromothunder/')
-            navigator.clipboard.writeText(productUrl)
-            btn.innerText = "Copiado!"
-          }
+        // nike
+        else if (productUrl.includes('oferta.vc')) {
+          navigator.clipboard.writeText(productUrl)
+          btn.innerText = "Copiado!"
+        }
 
-          if (productUrl.includes('nike.com')) {
-            const data = await fetchData(productUrl)
-            const afiliateUrl = data.deeplinks[0].deeplink
-            await navigator.clipboard.writeText(afiliateUrl)
-            btn.innerText = "Copiado!"
-          }      
+        // under armour, puma
+        else if (productUrl.includes('underarmour.com') || productUrl.includes('puma.com')) {
+          const awinLink = "https://www.awin1.com/cread.php?awinmid=18864&awinaffid=1420713&ued="
+          navigator.clipboard.writeText(awinLink + productUrl)
+          btn.innerText = "Copiado!"
+        }
 
-        })
-      }
-
-      async function fetchData(productUrl) {
-        const response = await fetch(`https://api.lomadee.com/v2/1692298135285757b7f2b/deeplink/_create?app-token=1692298135285757b7f2b&sourceId=38014582&url=${productUrl}&domain=oferta.vc`)
-        return response.json();
-      }
-    </script>
+        // adidas
+        else {
+          navigator.clipboard.writeText(productUrl)
+          btn.innerText = "Copiado!"
+        }
+      })
+    }
+  </script>
 </body>
+
 </html>
